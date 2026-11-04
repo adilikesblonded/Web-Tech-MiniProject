@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register a club · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <nav aria-label="Breadcrumb" class="mb-3">
+      <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="clubs.html">Clubs</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Register a club</li>
+      </ol>
+    </nav>
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <h1 class="mb-2">Register a club</h1>
+        <p class="text-muted mb-4">Once approved, your club gets a public page and you can publish events from the organizer dashboard.</p>
+        <form id="club-form" class="surface p-4" novalidate>
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label for="c-name" class="form-label">Club name</label>
+              <input id="c-name" name="name" class="form-control" minlength="3" maxlength="100" required>
+              <div class="invalid-feedback">Enter the club's full name.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="c-short" class="form-label">Short name</label>
+              <input id="c-short" name="short_name" class="form-control" minlength="2" maxlength="40" required aria-describedby="c-short-help">
+              <div id="c-short-help" class="form-text">Shown on event cards.</div>
+              <div class="invalid-feedback">Enter a short name.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="c-category" class="form-label">Category</label>
+              <select id="c-category" name="category" class="form-select" required>
+                <option value="">Choose…</option>
+              </select>
+              <div class="invalid-feedback">Choose a category.</div>
+            </div>
+            <div class="col-md-6">
+              <label for="c-email" class="form-label">Contact email</label>
+              <input id="c-email" name="contact_email" type="email" class="form-control" required>
+              <div class="invalid-feedback">Enter a valid email address.</div>
+            </div>
+            <div class="col-12">
+              <label for="c-desc" class="form-label">About the club</label>
+              <textarea id="c-desc" name="description" class="form-control" rows="4" minlength="20" maxlength="600" required aria-describedby="c-desc-count"></textarea>
+              <div id="c-desc-count" class="form-text">0 / 600 characters</div>
+              <div class="invalid-feedback">Write at least 20 characters.</div>
+            </div>
+          </div>
+          <div id="club-msg" class="mt-3" aria-live="polite"></div>
+          <button class="btn btn-primary mt-3" type="submit">Submit for review</button>
+        </form>
+      </div>
+
+      <aside class="col-lg-5" aria-labelledby="apps-title">
+        <h2 id="apps-title" class="h4 mb-3">Your applications</h2>
+        <div id="applications"></div>
+      </aside>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    CATEGORIES.forEach((c) => $("#c-category").append(h("option", { value: c, text: c })));
+    $("#c-desc").addEventListener("input", (e) => { $("#c-desc-count").textContent = `${e.target.value.length} / 600 characters`; });
+
+    async function loadApplications() {
+      const holder = $("#applications");
+      try {
+        const clubs = await api("/me/clubs");
+        if (!clubs.length) {
+          holder.replaceChildren(h("p", { class: "text-muted", text: "You have not registered any clubs yet." }));
+          return;
+        }
+        holder.replaceChildren(h("ul", { class: "list-unstyled" }, clubs.map((c) =>
+          h("li", { class: "surface p-3 mb-3" },
+            h("div", { class: "d-flex justify-content-between align-items-start gap-2" },
+              h("div", {},
+                h("p", { class: "fw-semibold mb-0", text: c.name }),
+                h("p", { class: "meta mb-0", text: c.category })),
+              statusLabel({ pending: "Pending review", approved: "Approved", rejected: "Rejected" }[c.status])),
+            c.status === "rejected" && c.review_note ? h("p", { class: "small mt-2 mb-0" }, h("strong", { text: "Reason: " }), c.review_note) : null,
+            c.status === "approved" ? h("a", { class: "small d-inline-block mt-2", href: `organizer.html?club=${c.id}`, text: "Open organizer dashboard" }) : null))));
+      } catch (err) {
+        holder.replaceChildren(errorBox(err.message, loadApplications));
+      }
+    }
+
+    $("#club-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      form.classList.add("was-validated");
+      if (!form.checkValidity()) return;
+      try {
+        await withBusy(form.querySelector("button[type=submit]"), () =>
+          api("/clubs", { method: "POST", body: Object.fromEntries(new FormData(form).entries()) }), "Submitting…");
+        form.reset();
+        form.classList.remove("was-validated");
+        $("#c-desc-count").textContent = "0 / 600 characters";
+        showMessage($("#club-msg"), "Application submitted. It will appear in the directory once approved.", "success");
+        loadApplications();
+      } catch (err) {
+        showMessage($("#club-msg"), err.message);
+      }
+    });
+
+    initPage("clubs").then(() => {
+      if (!requireLogin()) return;
+      $("#c-email").value = currentUser.email;
+      loadApplications();
+    });
+  </script>
+</body>
+</html>

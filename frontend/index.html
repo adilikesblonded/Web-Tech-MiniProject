@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eventify · Campus events at MIT Manipal</title>
+  <meta name="description" content="Find club events at MIT Manipal, reserve a seat and get a QR ticket.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <section class="hero mb-5" aria-labelledby="hero-title">
+      <p class="eyebrow mb-2">MIT Manipal · Campus events</p>
+      <h1 id="hero-title" class="mb-4">Find your next after-class plan</h1>
+      <form id="search-form" class="search-box" role="search">
+        <label for="search" class="visually-hidden">Search events</label>
+        <div class="input-group">
+          <input id="search" type="search" class="form-control" placeholder="Search events or clubs" autocomplete="off">
+          <button class="btn btn-primary px-4" type="submit">Search</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="featured-section" class="mb-5" aria-labelledby="featured-title">
+      <h2 id="featured-title" class="visually-hidden">Featured and coming up</h2>
+      <div id="featured" class="row g-4"></div>
+    </section>
+
+    <section aria-labelledby="all-title">
+      <div class="section-title">
+        <h2 id="all-title">Upcoming events</h2>
+        <span id="result-count" class="text-muted small" aria-live="polite"></span>
+      </div>
+      <div class="d-flex flex-column flex-md-row gap-3 justify-content-between mb-4">
+        <div id="category-filters" class="filter-chips" role="group" aria-label="Filter by category"></div>
+        <div class="d-flex gap-2 align-items-center">
+          <label for="from-date" class="small text-muted text-nowrap">From</label>
+          <input id="from-date" type="date" class="form-control form-control-sm">
+          <label for="to-date" class="small text-muted">to</label>
+          <input id="to-date" type="date" class="form-control form-control-sm">
+        </div>
+      </div>
+      <div id="event-grid" class="row g-4" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <h1 class="mb-4 text-center">Welcome to Eventify</h1>
+        <div class="surface p-4">
+          <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" type="button" role="tab" aria-controls="login-pane" aria-selected="true">Log in</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup-pane" type="button" role="tab" aria-controls="signup-pane" aria-selected="false">Create account</button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <section class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab">
+              <form id="login-form" novalidate>
+                <div class="mb-3">
+                  <label for="login-email" class="form-label">Email</label>
+                  <input id="login-email" name="email" type="email" class="form-control" autocomplete="email" required>
+                  <div class="invalid-feedback">Enter your email address.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="login-password" class="form-label">Password</label>
+                  <input id="login-password" name="password" type="password" class="form-control" autocomplete="current-password" required>
+                  <div class="invalid-feedback">Enter your password.</div>
+                </div>
+                <div id="login-msg" class="mb-3" aria-live="polite"></div>
+                <button class="btn btn-primary w-100" type="submit">Log in</button>
+              </form>
+            </section>
+
+            <section class="tab-pane fade" id="signup-pane" role="tabpanel" aria-labelledby="signup-tab">
+              <form id="signup-form" novalidate>
+                <div class="mb-3">
+                  <label for="su-name" class="form-label">Full name</label>
+                  <input id="su-name" name="name" class="form-control" autocomplete="name" minlength="2" maxlength="80" required>
+                  <div class="invalid-feedback">Enter your name.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="su-reg" class="form-label">Registration number</label>
+                  <input id="su-reg" name="reg_no" class="form-control" inputmode="numeric" pattern="[0-9]{5,20}" required aria-describedby="su-reg-help">
+                  <div id="su-reg-help" class="form-text">Digits only, as on your student ID.</div>
+                  <div class="invalid-feedback">Use digits only (at least 5).</div>
+                </div>
+                <div class="mb-3">
+                  <label for="su-email" class="form-label">Email</label>
+                  <input id="su-email" name="email" type="email" class="form-control" autocomplete="email" required>
+                  <div class="invalid-feedback">Enter a valid email address.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="su-password" class="form-label">Password</label>
+                  <input id="su-password" name="password" type="password" class="form-control" autocomplete="new-password" minlength="8" required aria-describedby="su-pw-help">
+                  <div id="su-pw-help" class="form-text">At least 8 characters.</div>
+                  <div class="invalid-feedback">Use at least 8 characters.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="su-confirm" class="form-label">Confirm password</label>
+                  <input id="su-confirm" type="password" class="form-control" autocomplete="new-password" required>
+                  <div class="invalid-feedback">Passwords do not match.</div>
+                </div>
+                <div id="signup-msg" class="mb-3" aria-live="polite"></div>
+                <button class="btn btn-primary w-100" type="submit">Create account</button>
+              </form>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const next = param("next") || "index.html";
+    const safeNext = /^[a-z-]+\.html(\?[\w=&%-]*)?$/i.test(next) ? next : "index.html";
+
+    if (location.hash === "#signup") bootstrap.Tab.getOrCreateInstance($("#signup-tab")).show();
+
+    function formData(form) {
+      return Object.fromEntries(new FormData(form).entries());
+    }
+
+    $("#login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      form.classList.add("was-validated");
+      if (!form.checkValidity()) return;
+      try {
+        await withBusy(form.querySelector("button[type=submit]"), () =>
+          api("/auth/login", { method: "POST", body: formData(form) }), "Logging in…");
+        location.href = safeNext;
+      } catch (err) {
+        showMessage($("#login-msg"), err.message);
+      }
+    });
+
+    $("#signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const confirmBox = $("#su-confirm");
+      confirmBox.setCustomValidity(confirmBox.value === $("#su-password").value ? "" : "mismatch");
+      form.classList.add("was-validated");
+      if (!form.checkValidity()) return;
+      try {
+        await withBusy(form.querySelector("button[type=submit]"), () =>
+          api("/auth/signup", { method: "POST", body: formData(form) }), "Creating account…");
+        location.href = safeNext;
+      } catch (err) {
+        showMessage($("#signup-msg"), err.message);
+      }
+    });
+
+    initPage("login").then((user) => { if (user) location.replace(safeNext); });
+  </script>
+</body>
+</html>

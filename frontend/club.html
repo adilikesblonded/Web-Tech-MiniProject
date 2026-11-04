@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Club · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <div id="club-view"></div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function loadClub() {
+      const view = $("#club-view");
+      view.replaceChildren(loading("Loading club…"));
+      try {
+        const club = await api(`/clubs/${Number(param("id"))}`);
+        document.title = `${club.name} · Eventify`;
+        view.replaceChildren(
+          h("nav", { "aria-label": "Breadcrumb", class: "mb-3" },
+            h("ol", { class: "breadcrumb small" },
+              h("li", { class: "breadcrumb-item" }, h("a", { href: "clubs.html", text: "Clubs" })),
+              h("li", { class: "breadcrumb-item active", "aria-current": "page", text: club.short_name }))),
+          h("div", { class: "d-flex gap-3 align-items-center mb-3" },
+            monogram(club, true),
+            h("div", {},
+              h("p", { class: "eyebrow mb-1", text: club.category }),
+              h("h1", { class: "mb-0", text: club.name }))),
+          h("p", { class: "description mb-5", text: club.description }),
+          h("section", { "aria-labelledby": "up-title", class: "mb-5" },
+            h("div", { class: "section-title" }, h("h2", { id: "up-title", text: "Upcoming events" })),
+            club.upcoming.length
+              ? h("div", { class: "row g-4" }, club.upcoming.map((e) => h("div", { class: "col-12 col-md-6 col-lg-4" }, eventCard(e))))
+              : emptyState("No upcoming events from this club yet.")),
+          h("section", { "aria-labelledby": "past-title" },
+            h("div", { class: "section-title" }, h("h2", { id: "past-title", text: "Past events" })),
+            club.past.length
+              ? h("ul", { class: "list-unstyled coming-up" }, club.past.map((e) =>
+                  h("li", {}, h("a", { href: `event.html?id=${e.id}` },
+                    h("span", { class: "date-chip" },
+                      h("span", { class: "m d-block", text: fmtMonth(e.starts_at) }),
+                      h("span", { class: "d d-block", text: fmtDay(e.starts_at) })),
+                    h("span", {},
+                      h("span", { class: "cu-title d-block fw-semibold", text: e.title }),
+                      h("span", { class: "meta d-block", text: `${e.venue} · ${fmtDate(e.starts_at)}` }))))))
+              : h("p", { class: "text-muted", text: "No past events yet." }))
+        );
+      } catch (err) {
+        view.replaceChildren(err.status === 404
+          ? emptyState("This club could not be found.", h("a", { class: "btn btn-sm btn-outline-dark", href: "clubs.html", text: "See all clubs" }))
+          : errorBox(err.message, loadClub));
+      }
+    }
+    initPage("clubs").then(loadClub);
+  </script>
+</body>
+</html>

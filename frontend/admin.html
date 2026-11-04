@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review clubs · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <p class="eyebrow mb-2">Administrator</p>
+    <h1 class="mb-4">Club applications</h1>
+    <ul class="nav nav-pills mb-4" id="status-tabs">
+      <li class="nav-item"><button class="nav-link active" type="button" data-status="pending">Pending</button></li>
+      <li class="nav-item"><button class="nav-link" type="button" data-status="approved">Approved</button></li>
+      <li class="nav-item"><button class="nav-link" type="button" data-status="rejected">Rejected</button></li>
+    </ul>
+    <div id="queue" aria-live="polite"></div>
+  </main>
+
+  <div class="modal fade" id="reject-modal" tabindex="-1" aria-labelledby="reject-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="reject-form" novalidate>
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="reject-title">Reject application</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="reject-note" class="form-label">Reason shown to the applicant</label>
+          <textarea id="reject-note" class="form-control" rows="3" maxlength="300" required></textarea>
+          <div class="invalid-feedback">Give a short reason.</div>
+          <div id="reject-msg" class="mt-2" aria-live="polite"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Back</button>
+          <button type="submit" class="btn btn-primary">Reject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let status = "pending";
+    let rejecting = null;
+    const rejectModal = new bootstrap.Modal($("#reject-modal"));
+
+    async function review(club, decision, note, button) {
+      await withBusy(button, () =>
+        api(`/admin/clubs/${club.id}/review`, { method: "POST", body: { decision, note } }));
+      toast(decision === "approved" ? `${club.name} approved.` : `${club.name} rejected.`);
+      loadQueue();
+    }
+
+    function card(c) {
+      const actions = c.status === "pending"
+        ? h("div", { class: "d-flex gap-2" },
+            h("button", { class: "btn btn-success btn-sm", type: "button", text: "Approve",
+              onclick: (e) => review(c, "approved", null, e.currentTarget).catch((err) => toast(err.message, "danger")) }),
+            h("button", { class: "btn btn-outline-dark btn-sm", type: "button", text: "Reject",
+              onclick: () => { rejecting = c; $("#reject-form").reset(); $("#reject-form").classList.remove("was-validated"); $("#reject-msg").replaceChildren(); rejectModal.show(); } }))
+        : statusLabel(c.status === "approved" ? "Approved" : "Rejected");
+      return h("li", { class: "surface p-4 mb-3" },
+        h("div", { class: "d-flex flex-column flex-md-row justify-content-between gap-3" },
+          h("div", { class: "d-flex gap-3" },
+            monogram(c),
+            h("div", {},
+              h("h2", { class: "h5 mb-1", text: c.name }),
+              h("p", { class: "meta mb-2", text: `${c.short_name} · ${c.category} · submitted ${fmtDate(c.created_at)}` }),
+              h("p", { class: "mb-2", text: c.description }),
+              h("p", { class: "small mb-0 text-muted", text: `Applicant: ${c.applicant.name} (${c.applicant.reg_no}) · Contact: ${c.contact_email}` }),
+              c.review_note ? h("p", { class: "small mt-2 mb-0" }, h("strong", { text: "Reason: " }), c.review_note) : null)),
+          h("div", { class: "flex-shrink-0" }, actions)));
+    }
+
+    async function loadQueue() {
+      const queue = $("#queue");
+      queue.replaceChildren(loading());
+      try {
+        const clubs = await api(`/admin/clubs?status=${status}`);
+        queue.replaceChildren(clubs.length
+          ? h("ul", { class: "list-unstyled" }, clubs.map(card))
+          : emptyState(status === "pending" ? "No applications are waiting for review." : `No ${status} applications.`));
+      } catch (err) {
+        queue.replaceChildren(errorBox(err.message, loadQueue));
+      }
+    }
+
+    $("#status-tabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-status]");
+      if (!btn) return;
+      document.querySelectorAll("#status-tabs .nav-link").forEach((b) => b.classList.toggle("active", b === btn));
+      status = btn.dataset.status;
+      loadQueue();
+    });
+
+    $("#reject-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      form.classList.add("was-validated");
+      if (!form.checkValidity()) return;
+      try {
+        await review(rejecting, "rejected", $("#reject-note").value.trim(), form.querySelector("button[type=submit]"));
+        rejectModal.hide();
+      } catch (err) {
+        showMessage($("#reject-msg"), err.message);
+      }
+    });
+
+    initPage("admin").then((user) => {
+      if (!requireLogin()) return;
+      if (!user.is_admin) {
+        $("#main").replaceChildren(emptyState("This page is only available to the administrator.",
+          h("a", { class: "btn btn-sm btn-outline-dark", href: "index.html", text: "Back to events" })));
+        return;
+      }
+      loadQueue();
+    });
+  </script>
+</body>
+</html>

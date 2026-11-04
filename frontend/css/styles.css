@@ -1,0 +1,225 @@
+/* Eventify — shared styles layered on Bootstrap 5.3 */
+:root {
+  --ev-bg: #F6F3EC;
+  --ev-surface: #FFFDF8;
+  --ev-ink: #202624;
+  --ev-muted: #5E6662;
+  --ev-rust: #A63D24;
+  --ev-rust-dark: #8A311C;
+  --ev-green: #24483D;
+  --ev-line: #D8D4CA;
+  --ev-serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+
+  --bs-body-bg: var(--ev-bg);
+  --bs-body-color: var(--ev-ink);
+  --bs-border-color: var(--ev-line);
+  --bs-secondary-color: var(--ev-muted);
+  --bs-link-color: var(--ev-green);
+  --bs-link-color-rgb: 36, 72, 61;
+  --bs-link-hover-color: var(--ev-rust);
+  --bs-border-radius: 8px;
+  --bs-border-radius-lg: 10px;
+  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; }
+
+.skip-link {
+  position: absolute; left: 1rem; top: -3rem; z-index: 2000;
+  background: var(--ev-ink); color: #fff; padding: .5rem 1rem; border-radius: 6px;
+}
+.skip-link:focus { top: 1rem; color: #fff; }
+
+:focus-visible { outline: 3px solid var(--ev-rust); outline-offset: 2px; }
+.btn:focus-visible, .form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 .2rem rgba(166, 61, 36, .3); border-color: var(--ev-rust);
+}
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: var(--ev-rust); --bs-btn-border-color: var(--ev-rust);
+  --bs-btn-hover-bg: var(--ev-rust-dark); --bs-btn-hover-border-color: var(--ev-rust-dark);
+  --bs-btn-active-bg: var(--ev-rust-dark); --bs-btn-active-border-color: var(--ev-rust-dark);
+  --bs-btn-disabled-bg: #B9806F; --bs-btn-disabled-border-color: #B9806F;
+}
+.btn-outline-dark {
+  --bs-btn-color: var(--ev-ink); --bs-btn-border-color: var(--ev-line);
+  --bs-btn-hover-bg: var(--ev-ink); --bs-btn-hover-border-color: var(--ev-ink);
+}
+.btn-success {
+  --bs-btn-bg: var(--ev-green); --bs-btn-border-color: var(--ev-green);
+  --bs-btn-hover-bg: #1A362E; --bs-btn-hover-border-color: #1A362E;
+}
+
+/* Header and footer */
+.site-header { background: var(--ev-surface); border-bottom: 1px solid var(--ev-line); }
+.navbar-brand { font-family: var(--ev-serif); font-size: 1.45rem; font-weight: 700; color: var(--ev-ink); }
+.navbar-brand span { color: var(--ev-rust); }
+.brand-tag { font-size: .75rem; color: var(--ev-muted); letter-spacing: .04em; }
+.navbar .nav-link { color: var(--ev-ink); font-weight: 500; padding: .5rem .85rem !important; border-radius: 6px; }
+.navbar .nav-link:hover { background: #EFEAE0; }
+.navbar .nav-link.active { color: var(--ev-rust); box-shadow: inset 0 -2px 0 var(--ev-rust); border-radius: 0; }
+.site-footer { border-top: 1px solid var(--ev-line); color: var(--ev-muted); font-size: .875rem; }
+
+/* Type */
+h1, h2, .display-serif { font-family: var(--ev-serif); font-weight: 700; letter-spacing: -.01em; }
+.eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ev-rust); }
+.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  border-bottom: 1px solid var(--ev-line); padding-bottom: .5rem; margin-bottom: 1.25rem; }
+.section-title h2 { font-size: 1.5rem; margin: 0; }
+.text-muted { color: var(--ev-muted) !important; }
+
+.surface { background: var(--ev-surface); border: 1px solid var(--ev-line); border-radius: 10px; }
+
+/* Home */
+.hero h1 { font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.1; max-width: 16ch; }
+.search-box { max-width: 560px; }
+.search-box .form-control { padding: .75rem 1rem; }
+.coming-up li { border-bottom: 1px solid var(--ev-line); }
+.coming-up li:last-child { border-bottom: 0; }
+.coming-up a { display: flex; gap: 1rem; padding: .9rem 0; color: inherit; text-decoration: none; }
+.coming-up a:hover .cu-title { color: var(--ev-rust); }
+.date-chip { flex: 0 0 3.5rem; text-align: center; border: 1px solid var(--ev-line); border-radius: 8px;
+  padding: .35rem 0; background: var(--ev-surface); line-height: 1.1; }
+.date-chip .m { font-size: .7rem; font-weight: 700; text-transform: uppercase; color: var(--ev-rust); }
+.date-chip .d { font-size: 1.35rem; font-weight: 700; font-family: var(--ev-serif); }
+
+.filter-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.filter-chips .btn { border-radius: 999px; padding: .35rem .95rem; font-size: .9rem; }
+.filter-chips .btn[aria-pressed="true"] { background: var(--ev-ink); color: #fff; border-color: var(--ev-ink); }
+
+/* Event cards */
+.event-card { height: 100%; background: var(--ev-surface); border: 1px solid var(--ev-line); border-radius: 10px;
+  overflow: hidden; color: inherit; text-decoration: none; display: flex; flex-direction: column;
+  transition: transform .15s ease, border-color .15s ease; }
+.event-card:hover { transform: translateY(-2px); border-color: #B8B2A5; color: inherit; }
+.event-card .poster { border-radius: 0; aspect-ratio: 4 / 3; }
+.event-card .card-body { padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
+.event-date { font-weight: 700; color: var(--ev-rust); font-size: .9rem; }
+.event-card h3 { font-size: 1.15rem; margin: 0; font-weight: 700; }
+.meta { color: var(--ev-muted); font-size: .9rem; }
+
+/* Status labels: colour is always paired with text */
+.status { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; font-weight: 600;
+  padding: .2rem .6rem; border-radius: 999px; border: 1px solid; white-space: nowrap; width: fit-content; }
+.status::before { content: ""; width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; }
+.status-open, .status-confirmed, .status-approved, .status-checked { color: #1E5A3A; background: #E6F1EA; border-color: #B7D6C3; }
+.status-few, .status-waitlisted, .status-pending { color: #7A4A06; background: #FBF0DB; border-color: #E9CF9C; }
+.status-full { color: #8A311C; background: #F8E6E0; border-color: #E5BCAF; }
+.status-closed, .status-ended, .status-past { color: #4E5552; background: #ECEAE4; border-color: #D2CEC4; }
+.status-cancelled, .status-rejected { color: #8A1F1F; background: #F7E3E3; border-color: #E3B5B5; }
+
+/* Posters, generated with CSS so every event has artwork */
+.poster { position: relative; overflow: hidden; border-radius: 10px; aspect-ratio: 4 / 3;
+  padding: 1.1rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; isolation: isolate; }
+.poster-lg { aspect-ratio: 4 / 3.2; padding: 1.75rem; }
+.poster .p-club { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.poster .p-title { font-size: clamp(1.35rem, 2.3vw, 1.75rem); line-height: 1.05; font-weight: 800; max-width: 14ch; margin: 0; }
+.poster-lg .p-title { font-size: clamp(1.9rem, 4vw, 3rem); }
+.poster .p-date { font-size: .85rem; font-weight: 600; }
+.poster::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+
+.poster--ember { background: #F3E6D3; color: #8E2A1B; }
+.poster--ember .p-title { font-family: var(--ev-serif); }
+.poster--ember::after { width: 55%; aspect-ratio: 1; right: -12%; bottom: -18%; border-radius: 50%;
+  border: 14px solid #D9B48F; box-shadow: 0 0 0 18px #F3E6D3, 0 0 0 26px #E8C9A6; }
+
+.poster--noir { background: #141414; color: #F4EEE4; }
+.poster--noir .p-title { text-transform: uppercase; letter-spacing: -.02em; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+.poster-lg.poster--noir .p-title { font-size: clamp(2.2rem, 4.6vw, 3.4rem); }
+.poster--noir::after { width: 40%; height: 140%; right: 8%; top: -20%;
+  background: radial-gradient(ellipse at top, rgba(255, 240, 210, .28), transparent 70%); }
+
+.poster--cobalt { background: #1D3FC2; color: #fff; }
+.poster--cobalt .p-title { text-transform: uppercase; font-style: italic; font-size: clamp(1.6rem, 2.8vw, 2.15rem); line-height: .95; }
+.poster-lg.poster--cobalt .p-title { font-size: clamp(2.3rem, 5vw, 3.6rem); }
+.poster--cobalt::after { inset: 0; background: repeating-linear-gradient(-55deg, transparent 0 28px, rgba(255, 255, 255, .07) 28px 40px); }
+
+.poster--sage { background: #2F4A3C; color: #F1EBDD; }
+.poster--sage::after { inset: .7rem; border: 2px solid rgba(241, 235, 221, .55); border-radius: 4px; }
+.poster--sage .p-title { font-family: var(--ev-serif); font-weight: 700; }
+
+.poster--mustard { background: #E3B23C; color: #1F1F1F; }
+.poster--mustard::after { content: "?"; right: 4%; bottom: -22%; font: 900 11rem/1 var(--ev-serif); color: rgba(0, 0, 0, .12); }
+.poster-lg.poster--mustard::after { font-size: 19rem; }
+
+.poster--mint { color: #1E2A26; border: 1px solid var(--ev-line); padding-top: 2.4rem;
+  background:
+    linear-gradient(transparent calc(100% - 6px), #2FA86B calc(100% - 6px)),
+    linear-gradient(#EAF1EE 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, #EAF1EE 1px, transparent 1px) 0 0 / 22px 22px,
+    #FFFFFF; }
+.poster--mint::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1.6rem; background: #EEF2F0;
+  border-bottom: 1px solid #DCE3E0; }
+.poster--mint::after { left: .8rem; top: .55rem; width: .5rem; height: .5rem; border-radius: 50%; z-index: 1;
+  background: #E06C5A; box-shadow: .8rem 0 0 #E6B54A, 1.6rem 0 0 #2FA86B; }
+.poster--mint .p-club { color: #1D8A56; }
+
+.poster--terminal { background: #1E2321; color: #B5E655; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.poster--terminal .p-title::before { content: "> "; opacity: .7; }
+.poster--terminal .p-title { font-weight: 700; }
+.poster--terminal::after { right: 1.2rem; bottom: 1.1rem; width: .65rem; height: 1.2rem; background: #B5E655;
+  animation: blink 1.1s steps(1) infinite; }
+
+.poster--navy { background: #1C2A4A; color: #F2E8D5; }
+.poster--navy::after { inset: 0; opacity: .25;
+  background:
+    linear-gradient(90deg, transparent 49%, #F2E8D5 49% 51%, transparent 51%) 0 0 / 60px 60px,
+    linear-gradient(0deg, transparent 49%, #F2E8D5 49% 51%, transparent 51%) 30px 30px / 60px 60px,
+    radial-gradient(circle, #F2E8D5 3px, transparent 4px) 0 0 / 60px 60px; }
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Event detail */
+.booking-panel { position: sticky; top: 1.5rem; }
+.info-list dt { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ev-muted); font-weight: 600; }
+.info-list dd { margin-bottom: .9rem; font-weight: 500; }
+.seat-bar { height: .5rem; background: #ECE7DC; border-radius: 999px; }
+.seat-bar .progress-bar { background: var(--ev-green); }
+.description { white-space: pre-line; line-height: 1.7; max-width: 65ch; }
+
+/* Club directory */
+.club-row { display: flex; gap: 1rem; align-items: flex-start; padding: 1.1rem 0; border-bottom: 1px solid var(--ev-line);
+  color: inherit; text-decoration: none; }
+.club-row:hover h3 { color: var(--ev-rust); }
+.club-row h3 { font-size: 1.1rem; margin: 0 0 .15rem; font-weight: 700; }
+.monogram { flex: 0 0 auto; width: 3.25rem; height: 3.25rem; border-radius: 10px; display: grid; place-items: center;
+  font: 700 1.15rem/1 var(--ev-serif); color: #fff; background: var(--ev-green); }
+.monogram-lg { width: 4.5rem; height: 4.5rem; font-size: 1.6rem; }
+.mono-Music { background: #8E2A1B; } .mono-Theatre { background: #141414; } .mono-Dance { background: #1D3FC2; }
+.mono-Photography { background: #2F4A3C; } .mono-Literary { background: #9A6B08; } .mono-Technology { background: #1C2A4A; }
+.mono-Other { background: #5E6662; }
+
+/* Dashboards */
+.stat { padding: 1rem 1.1rem; }
+.stat .n { font: 700 2rem/1.1 var(--ev-serif); }
+.stat .l { font-size: .8rem; color: var(--ev-muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+.table { --bs-table-bg: transparent; }
+.table thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ev-muted); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+#reader { max-width: 380px; }
+#reader video { border-radius: 8px; }
+.scan-result { min-height: 3.5rem; }
+
+/* Tickets */
+.ticket { display: flex; gap: 1rem; align-items: center; }
+.ticket-qr { width: 100%; max-width: 260px; aspect-ratio: 1; background: #fff; border: 1px solid var(--ev-line);
+  border-radius: 10px; padding: .5rem; }
+.token-text { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85rem; word-break: break-all; }
+
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--ev-muted); border: 1px dashed var(--ev-line); border-radius: 10px; }
+
+.form-label { font-weight: 600; font-size: .9rem; }
+.form-text { color: var(--ev-muted); }
+
+@media (max-width: 991.98px) {
+  .booking-panel { position: static; }
+}
+@media (max-width: 575.98px) {
+  .poster-lg { padding: 1.25rem; }
+  .stat .n { font-size: 1.6rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

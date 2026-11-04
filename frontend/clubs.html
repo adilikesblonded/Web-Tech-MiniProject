@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clubs · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+      <div>
+        <p class="eyebrow mb-2">Directory</p>
+        <h1 class="mb-0">Clubs on Eventify</h1>
+      </div>
+      <a href="register-club.html" class="btn btn-primary">Register a club</a>
+    </div>
+
+    <form id="club-filters" class="row g-2 mb-3" role="search">
+      <div class="col-md-7">
+        <label for="club-search" class="visually-hidden">Search clubs</label>
+        <input id="club-search" type="search" class="form-control" placeholder="Search by name or interest">
+      </div>
+      <div class="col-md-3">
+        <label for="club-category" class="visually-hidden">Category</label>
+        <select id="club-category" class="form-select">
+          <option value="">All categories</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-outline-dark" type="submit">Search</button>
+      </div>
+    </form>
+
+    <div id="club-list" aria-live="polite"></div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/clubs.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage events · Eventify</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container py-4 py-lg-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+      <div>
+        <p class="eyebrow mb-2">Organizer</p>
+        <h1 class="mb-0" id="club-heading">Manage events</h1>
+      </div>
+      <div class="d-flex gap-2 align-items-end">
+        <div id="club-picker" hidden>
+          <label for="club-select" class="form-label small mb-1">Club</label>
+          <select id="club-select" class="form-select"></select>
+        </div>
+        <button id="new-event" class="btn btn-primary text-nowrap" type="button">New event</button>
+      </div>
+    </div>
+
+    <section class="mb-5" aria-labelledby="events-title">
+      <div class="section-title"><h2 id="events-title">Events</h2></div>
+      <div id="event-table" class="table-wrap"></div>
+    </section>
+
+    <section id="event-panel" aria-labelledby="panel-title" hidden>
+      <div class="section-title">
+        <h2 id="panel-title">Event</h2>
+        <a id="panel-link" class="small" href="#">View public page</a>
+      </div>
+
+      <div class="row g-3 mb-3" id="stats"></div>
+      <div class="surface p-3 mb-4">
+        <div class="d-flex justify-content-between small mb-2">
+          <span class="fw-semibold">Attendance</span>
+          <span id="attendance-text"></span>
+        </div>
+        <div class="progress seat-bar" role="progressbar" aria-label="Attendance" id="attendance-bar" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-people" data-bs-toggle="tab" data-bs-target="#pane-people" type="button" role="tab" aria-controls="pane-people" aria-selected="true">Participants</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-checkin" data-bs-toggle="tab" data-bs-target="#pane-checkin" type="button" role="tab" aria-controls="pane-checkin" aria-selected="false">Check-in</button>
+        </li>
+      </ul>
+      <div class="tab-content surface border-top-0 rounded-top-0 p-3 p-md-4">
+        <div class="tab-pane fade show active" id="pane-people" role="tabpanel" aria-labelledby="tab-people">
+          <div id="participants" class="table-wrap"></div>
+        </div>
+        <div class="tab-pane fade" id="pane-checkin" role="tabpanel" aria-labelledby="tab-checkin">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h3 class="h6">Scan a ticket</h3>
+              <div id="reader" class="mb-3"></div>
+              <button id="scan-toggle" class="btn btn-success" type="button">Start camera</button>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h6">Enter a ticket code</h3>
+              <form id="token-form" class="d-flex gap-2 mb-3" novalidate>
+                <label for="token-input" class="visually-hidden">Ticket code</label>
+                <input id="token-input" class="form-control token-text" placeholder="Ticket code" autocomplete="off" required minlength="10">
+                <button class="btn btn-primary text-nowrap" type="submit">Check in</button>
+              </form>
+              <div id="scan-result" class="scan-result" aria-live="assertive"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="event-modal" tabindex="-1" aria-labelledby="event-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <form class="modal-content" id="event-form" novalidate>
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="event-modal-title">New event</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label for="f-title" class="form-label">Title</label>
+              <input id="f-title" name="title" class="form-control" minlength="3" maxlength="120" required>
+              <div class="invalid-feedback">Enter a title.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="f-category" class="form-label">Category</label>
+              <select id="f-category" name="category" class="form-select" required></select>
+            </div>
+            <div class="col-md-8">
+              <label for="f-venue" class="form-label">Venue</label>
+              <input id="f-venue" name="venue" class="form-control" maxlength="120" required>
+              <div class="invalid-feedback">Enter a venue.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="f-capacity" class="form-label">Capacity</label>
+              <input id="f-capacity" name="capacity" type="number" class="form-control" min="1" max="2000" required>
+              <div class="invalid-feedback">Enter a number from 1 to 2000.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="f-start" class="form-label">Starts (IST)</label>
+              <input id="f-start" name="starts_at" type="datetime-local" class="form-control" required>
+              <div class="invalid-feedback">Choose a start time in the future.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="f-end" class="form-label">Ends (IST)</label>
+              <input id="f-end" name="ends_at" type="datetime-local" class="form-control" required>
+              <div class="invalid-feedback">Choose an end time after the start.</div>
+            </div>
+            <div class="col-md-4">
+              <label for="f-deadline" class="form-label">Registration closes (IST)</label>
+              <input id="f-deadline" name="registration_deadline" type="datetime-local" class="form-control" required>
+              <div class="invalid-feedback">Choose a time on or before the start.</div>
+            </div>
+            <div class="col-12">
+              <label for="f-desc" class="form-label">Description</label>
+              <textarea id="f-desc" name="description" class="form-control" rows="4" minlength="20" maxlength="2000" required></textarea>
+              <div class="invalid-feedback">Write at least 20 characters.</div>
+            </div>
+            <div class="col-md-5">
+              <label for="f-style" class="form-label">Poster style</label>
+              <select id="f-style" name="poster_style" class="form-select">
+                <option value="ember">Ember</option>
+                <option value="noir">Noir</option>
+                <option value="cobalt">Cobalt</option>
+                <option value="sage">Sage</option>
+                <option value="mustard">Mustard</option>
+                <option value="mint">Browser</option>
+                <option value="terminal">Terminal</option>
+                <option value="navy">Circuit</option>
+              </select>
+              <p id="time-lock" class="form-text" hidden>Dates and times are fixed because students have registered.</p>
+            </div>
+            <div class="col-md-7">
+              <span class="form-label d-block">Preview</span>
+              <div id="poster-preview"></div>
+            </div>
+          </div>
+          <div id="event-msg" class="mt-3" aria-live="polite"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="event-submit">Publish event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer id="site-footer"></footer>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="vendor/html5-qrcode.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/organizer.js"></script>
+</body>
+</html>

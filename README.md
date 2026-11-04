@@ -34,7 +34,7 @@ A campus event platform for MIT Manipal clubs. Students find events, reserve a s
    createdb eventify
    ```
 
-2. Install dependencies (a virtual environment is recommended):
+2. Install dependencies:
 
    ```bash
    python -m venv .venv
@@ -58,8 +58,6 @@ A campus event platform for MIT Manipal clubs. Students find events, reserve a s
 
 5. Open http://localhost:8000. API docs are at http://localhost:8000/docs.
 
-Re-run `python -m backend.seed` shortly before a demo. Event dates are set relative to when the seed runs, and "Build Your First Web App" starts 20 minutes later so check-in can be shown straight away (check-in opens 30 minutes before an event starts).
-
 ## Demo accounts
 
 Every password is `demo1234` except the admin's.
@@ -69,18 +67,6 @@ Every password is `demo1234` except the admin's.
 | Administrator (also organizer of The Photography Club and IECSE) | `admin@example.com` (password `admin1234`) |
 | Students | `student1@example.com` … `student6@example.com` |
 | Organizers | `chords.organizer`, `aaina.organizer`, `blitzkrieg.organizer`, `ldq.organizer`, `mist.organizer`, `ieee.organizer` (all `@example.com`) |
-
-## Suggested demo (about 5 minutes)
-
-Everything below uses the one admin account.
-
-1. **Accounts:** log in as `admin@example.com`. Log out at the end of the demo.
-2. **Explore events:** on Explore, search and use the category and date filters. Open Clubs and a club page.
-3. **Club approval:** Register a club, then open Review clubs. Approve your application and reject *Campus Board Games Society* with a reason.
-4. **Event management:** Manage events → pick your new club. Create an event with a poster style, edit it, then cancel it.
-5. **Seat limits and waitlist:** register for *After Class: Open Mic*. Open *Circuits & Coffee* (full) and join the waitlist.
-6. **Automatic promotion:** My events shows you at #2 for *Frame by Frame: Campus Photo Walk*. Manage events → The Photography Club → edit the event and raise capacity to 3: Student 5 is promoted first and you move to #1. Raise it to 4: you are promoted and get a ticket.
-7. **QR ticket and check-in:** My events → Show ticket for *Build Your First Web App* and copy the ticket code. Manage events → IECSE → Manage → Check-in, then paste the code (or scan the QR from a second screen). Submit it again to show "Already checked in". The totals update.
 
 ## How it works
 
